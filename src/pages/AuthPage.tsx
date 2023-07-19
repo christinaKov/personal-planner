@@ -1,11 +1,15 @@
+// React
 import { useState, useEffect } from "react";
-import { createClient, Session } from "@supabase/supabase-js";
+
+// Components
 import LogInComponent from "../components/Auth/LogInComponent";
 
-const supabase = createClient(
-	"https://ersihsrulpuwhyljhwnc.supabase.co",
-	"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImVyc2loc3J1bHB1d2h5bGpod25jIiwicm9sZSI6ImFub24iLCJpYXQiOjE2ODc5NjM2ODMsImV4cCI6MjAwMzUzOTY4M30.uGjEAqvwQxxosa7u1vR6W9Loli_RHPks5TKTh_BN4TQ"
-);
+// Styles
+import { Box, Button } from "@mui/material";
+
+// Supabase
+import { supabase } from "../app/utils";
+import { Session } from "@supabase/supabase-js";
 
 const AuthPage = () => {
 	const [session, setSession] = useState<Session | null>(null!);
@@ -24,25 +28,32 @@ const AuthPage = () => {
 		return () => subscription.unsubscribe();
 	}, []);
 
-	if (!session) {
-		return (
-			<LogInComponent
-				session={session}
-				setSession={setSession}
-				supabase={supabase}
-			></LogInComponent>
-		);
-	} else {
-		return (
-			<button
-				onClick={async () => {
-					await supabase.auth.signOut();
-				}}
-			>
-				Log out
-			</button>
-		);
-	}
+	return (
+		<Box
+			display="flex"
+			flexDirection="column"
+			alignItems="center"
+			justifyContent="center"
+			height="70vh"
+			gap="3vw"
+		>
+			{session ? (
+				<Button
+					onClick={async () => {
+						await supabase.auth.signOut();
+					}}
+				>
+					Log out
+				</Button>
+			) : (
+				<LogInComponent
+					session={session}
+					setSession={setSession}
+					supabase={supabase}
+				></LogInComponent>
+			)}
+		</Box>
+	);
 };
 
 export default AuthPage;

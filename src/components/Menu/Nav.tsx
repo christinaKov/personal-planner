@@ -1,5 +1,15 @@
+// React
+import { useState, useRef, useEffect } from "react";
+import { Link, useLocation } from "react-router-dom";
+
+// Components
 import MenuComponent from "./Menu";
 
+// Supabase
+import { Session } from "@supabase/supabase-js";
+import { supabase } from "../../app/utils";
+
+// Styles
 import {
 	Box,
 	AppBar,
@@ -8,13 +18,25 @@ import {
 	Typography,
 	Button,
 } from "@mui/material";
-
 import MenuIcon from "@mui/icons-material/Menu";
-import { useState, useRef } from "react";
-
-import { Link } from "react-router-dom";
 
 const Nav = () => {
+	const [session, setSession] = useState<Session | null>(null!);
+
+	useEffect(() => {
+		supabase.auth.getSession().then(({ data: { session } }) => {
+			setSession(session);
+		});
+
+		const {
+			data: { subscription },
+		} = supabase.auth.onAuthStateChange((_event, session) => {
+			setSession(session);
+		});
+
+		return () => subscription.unsubscribe();
+	}, []);
+
 	const menuIconRef = useRef<HTMLButtonElement>(null);
 
 	const [isOpen, setIsOpen] = useState(false);
@@ -22,6 +44,7 @@ const Nav = () => {
 	const toggleMenu = () => {
 		setIsOpen(!isOpen);
 	};
+	const location = useLocation();
 
 	return (
 		<Box sx={{ flexGrow: 1 }}>
@@ -40,10 +63,18 @@ const Nav = () => {
 						<MenuIcon />
 					</IconButton>
 					<Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
-						Today's Agenda
+						{location.pathname === "/"
+							? "Today's Agenda"
+							: location.pathname === "/habbits"
+							? "Habbit Tracker"
+							: ""}
 					</Typography>
 					<Link to="/log-in">
-						<Button color="inherit">Login</Button>
+						{session ? (
+							<Button color="inherit">Log Out</Button>
+						) : (
+							<Button color="inherit">Log In</Button>
+						)}
 					</Link>
 				</Toolbar>
 			</AppBar>

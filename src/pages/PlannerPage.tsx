@@ -1,9 +1,9 @@
+// Components
 import QuickTasks from "../components/QuickTasks";
 import Projects from "../components/Projects";
 import Schedule from "../components/Schedule/Schedule";
 
-import HabbitOfTheDay from "../components/HabbitOfTheDay";
-
+//Styles
 import { Box } from "@mui/material";
 
 const MainPage = () => {
@@ -20,7 +20,6 @@ const MainPage = () => {
 				<Projects></Projects>
 				<Schedule></Schedule>
 			</Box>
-			<HabbitOfTheDay></HabbitOfTheDay>
 		</Box>
 	);
 };

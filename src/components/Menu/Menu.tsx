@@ -1,3 +1,7 @@
+// React
+import { Link } from "react-router-dom";
+
+// Styles
 import { MenuItem, Menu } from "@mui/material";
 
 const MenuComponent = ({
@@ -18,9 +22,16 @@ const MenuComponent = ({
 				"aria-labelledby": anchorEl?.id,
 			}}
 		>
-			<MenuItem onClick={toggleMenu}>Today's Agenda</MenuItem>
-			<MenuItem onClick={toggleMenu}>Calendar</MenuItem>
-			<MenuItem onClick={toggleMenu}>Habit Tracker</MenuItem>
+			<Link to="/">
+				<MenuItem onClick={toggleMenu}>Today's Agenda</MenuItem>
+			</Link>
+
+			<Link to="/calendar">
+				<MenuItem onClick={toggleMenu}>Calendar</MenuItem>
+			</Link>
+			<Link to="/habbits">
+				<MenuItem onClick={toggleMenu}>Habit Tracker</MenuItem>
+			</Link>
 		</Menu>
 	);
 };

@@ -1,6 +1,10 @@
-import { SupabaseClient, Session } from "@supabase/supabase-js";
+// React
 import { useState } from "react";
 
+// Supabase
+import { SupabaseClient, Session } from "@supabase/supabase-js";
+
+// Styles
 import { Box, TextField, Button } from "@mui/material";
 
 const LogInComponent = ({
@@ -49,14 +53,8 @@ const LogInComponent = ({
 		}
 	};
 	return (
-		<Box
-			display="flex"
-			flexDirection="column"
-			alignItems="center"
-			justifyContent="center"
-			height="100%"
-		>
-			<Box>
+		<Box>
+			<Box display="flex" gap="1vw">
 				<TextField
 					value={email}
 					onInput={handleEmail}
@@ -70,8 +68,10 @@ const LogInComponent = ({
 					placeholder="password"
 				/>
 			</Box>
-			<Button onClick={handleEmailSignUp}>Sign Up</Button>
-			<Button onClick={handleEmailSignIn}>Log In</Button>
+			<Box>
+				<Button onClick={handleEmailSignUp}>Sign Up</Button>
+				<Button onClick={handleEmailSignIn}>Log In</Button>
+			</Box>
 		</Box>
 	);
 };
