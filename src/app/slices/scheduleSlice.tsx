@@ -4,9 +4,9 @@ import { scheduler } from "timers/promises";
 
 // Define a type for the slice state
 interface ScheduleItem {
-	title: String;
-	time: String;
-	id: String;
+	title: string;
+	time: string;
+	id: string;
 }
 
 interface ScheduleState {

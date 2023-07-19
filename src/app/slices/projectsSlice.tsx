@@ -3,8 +3,8 @@ import type { PayloadAction } from "@reduxjs/toolkit";
 
 // Define a type for the slice state
 interface Projects {
-	title: String;
-	id: String;
+	title: string;
+	id: string;
 }
 
 interface ProjectsState {

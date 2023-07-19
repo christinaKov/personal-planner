@@ -1,37 +1,28 @@
-import styled from "styled-components";
-
 import QuickTasks from "../components/QuickTasks";
 import Projects from "../components/Projects";
-import Schedule from "../components/Schedule";
+import Schedule from "../components/Schedule/Schedule";
 
 import HabbitOfTheDay from "../components/HabbitOfTheDay";
 
+import { Box } from "@mui/material";
+
 const MainPage = () => {
 	return (
-		<StyledMain>
-			<h1>Today's Agenda</h1>
-			<StyledGrid>
+		<Box
+			display="flex"
+			flexDirection="column"
+			alignItems="center"
+			width="100%"
+			padding="4rem"
+		>
+			<Box display="grid" width="100%" gridTemplateColumns="repeat(3, 1fr)">
 				<QuickTasks></QuickTasks>
 				<Projects></Projects>
 				<Schedule></Schedule>
-			</StyledGrid>
+			</Box>
 			<HabbitOfTheDay></HabbitOfTheDay>
-		</StyledMain>
+		</Box>
 	);
 };
 
 export default MainPage;
-
-const StyledMain = styled.div`
-	padding: 4rem 4rem;
-	display: flex;
-	flex-direction: column;
-	align-items: center;
-	width: 100%;
-`;
-
-const StyledGrid = styled.div`
-	display: flex;
-	width: 100%;
-	justify-content: space-between;
-`;
