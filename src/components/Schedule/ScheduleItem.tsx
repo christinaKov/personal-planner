@@ -28,7 +28,7 @@ const ScheduleItem = ({
 	const handleAdding = (e: React.FormEvent<HTMLFormElement>) => {
 		e.preventDefault();
 
-		dispatch(addToSchedule({ title, id, time }));
+		dispatch(addToSchedule({ title: newScheduleItem, id, time }));
 		setNewScheduleItem("");
 	};
 
