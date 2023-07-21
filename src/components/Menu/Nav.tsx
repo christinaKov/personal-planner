@@ -1,13 +1,13 @@
 // React
 import { useState, useRef, useEffect } from "react";
 import { Link, useLocation } from "react-router-dom";
+import { useAppDispatch, useAppSelector } from "../../app/hooks";
 
 // Components
 import MenuComponent from "./Menu";
 
-// Supabase
-import { Session } from "@supabase/supabase-js";
-import { supabase } from "../../app/utils";
+// Auth
+import { fetchSession } from "../../app/slices/authSlice";
 
 // Styles
 import {
@@ -21,21 +21,13 @@ import {
 import MenuIcon from "@mui/icons-material/Menu";
 
 const Nav = () => {
-	const [session, setSession] = useState<Session | null>(null!);
+	const dispatch = useAppDispatch();
+
+	const session = useAppSelector((state) => state.authInfo.session);
 
 	useEffect(() => {
-		supabase.auth.getSession().then(({ data: { session } }) => {
-			setSession(session);
-		});
-
-		const {
-			data: { subscription },
-		} = supabase.auth.onAuthStateChange((_event, session) => {
-			setSession(session);
-		});
-
-		return () => subscription.unsubscribe();
-	}, []);
+		dispatch(fetchSession());
+	}, [dispatch]);
 
 	const menuIconRef = useRef<HTMLButtonElement>(null);
 

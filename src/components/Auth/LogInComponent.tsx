@@ -1,21 +1,17 @@
 // React
-import { useState } from "react";
+import { useState, useEffect } from "react";
 
-// Supabase
-import { SupabaseClient, Session } from "@supabase/supabase-js";
+import { useAppDispatch, useAppSelector } from "../../app/hooks";
 
 // Styles
 import { Box, TextField, Button } from "@mui/material";
 
-const LogInComponent = ({
-	supabase,
-	session,
-	setSession,
-}: {
-	supabase: SupabaseClient<any, "public", any>;
-	session: Session | null;
-	setSession: React.Dispatch<React.SetStateAction<Session | null>>;
-}) => {
+// Auth
+import { fetchSession, supabase } from "../../app/slices/authSlice";
+
+const LogInComponent = () => {
+	const dispatch = useAppDispatch();
+
 	const [email, setEmail] = useState("");
 	const [password, setPassword] = useState("");
 
@@ -36,7 +32,7 @@ const LogInComponent = ({
 		if (error) {
 			console.error("Ошибка при регистрации по email:", error);
 		} else {
-			setSession(session);
+			dispatch(fetchSession());
 		}
 	};
 
@@ -49,7 +45,7 @@ const LogInComponent = ({
 		if (error) {
 			console.error("Ошибка при входе по email:", error);
 		} else {
-			setSession(session);
+			dispatch(fetchSession());
 		}
 	};
 	return (

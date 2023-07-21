@@ -1,5 +1,6 @@
 // React
-import { useState, useEffect } from "react";
+import { useEffect } from "react";
+import { useAppDispatch, useAppSelector } from "../app/hooks";
 
 // Components
 import LogInComponent from "../components/Auth/LogInComponent";
@@ -7,26 +8,27 @@ import LogInComponent from "../components/Auth/LogInComponent";
 // Styles
 import { Box, Button } from "@mui/material";
 
-// Supabase
-import { supabase } from "../app/utils";
-import { Session } from "@supabase/supabase-js";
+// Auth
+import { fetchSession, supabase } from "../app/slices/authSlice";
 
 const AuthPage = () => {
-	const [session, setSession] = useState<Session | null>(null!);
+	const dispatch = useAppDispatch();
+
+	const session = useAppSelector((state) => state.authInfo.session);
 
 	useEffect(() => {
-		supabase.auth.getSession().then(({ data: { session } }) => {
-			setSession(session);
-		});
+		dispatch(fetchSession());
+	}, [dispatch]);
 
-		const {
-			data: { subscription },
-		} = supabase.auth.onAuthStateChange((_event, session) => {
-			setSession(session);
-		});
+	const handleSignOut = async () => {
+		const { error } = await supabase.auth.signOut();
 
-		return () => subscription.unsubscribe();
-	}, []);
+		if (error) {
+			console.error("Ошибка при выходе:", error);
+		} else {
+			dispatch(fetchSession());
+		}
+	};
 
 	return (
 		<Box
@@ -38,19 +40,9 @@ const AuthPage = () => {
 			gap="3vw"
 		>
 			{session ? (
-				<Button
-					onClick={async () => {
-						await supabase.auth.signOut();
-					}}
-				>
-					Log out
-				</Button>
+				<Button onClick={handleSignOut}>Log out</Button>
 			) : (
-				<LogInComponent
-					session={session}
-					setSession={setSession}
-					supabase={supabase}
-				></LogInComponent>
+				<LogInComponent></LogInComponent>
 			)}
 		</Box>
 	);
