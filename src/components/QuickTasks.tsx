@@ -1,29 +1,58 @@
+//React
+import { useState, useEffect } from "react";
 import { useAppSelector, useAppDispatch } from "../app/hooks";
-import { addToTasks, removeFromTasks } from "../app/slices/tasksSlice";
+import {
+	addToTasks,
+	removeFromTasks,
+	fetchTasks,
+} from "../app/slices/tasksSlice";
 
+// Supabase
+import { fetchSession } from "../app/slices/authSlice";
+
+// UUID
 import { v4 as uuidv4 } from "uuid";
-import { useState } from "react";
 
+// Styles
 import { TextField, Button, Box } from "@mui/material";
 
 const QuickTasks = () => {
-	const QuickTasks = useAppSelector((state) => state.quickTasks.tasks);
 	const dispatch = useAppDispatch();
 
-	const [newTick, setNewTick] = useState("");
+	const session = useAppSelector((state) => state.authInfo.session);
+
+	useEffect(() => {
+		dispatch(fetchSession());
+		dispatch(fetchTasks());
+	}, [dispatch]);
+
+	const QuickTasks = useAppSelector((state) => state.quickTasks.tasks);
+
+	const [newTask, setNewTask] = useState("");
 
 	const handleInput = (value: string) => {
-		setNewTick(value);
+		setNewTask(value);
 	};
 
 	const handleAdding = (e: React.FormEvent<HTMLFormElement>) => {
 		e.preventDefault();
 
-		dispatch(addToTasks({ title: newTick, id: uuidv4() }));
-		setNewTick("");
+		dispatch(
+			addToTasks([
+				{
+					task_title: newTask,
+					id: uuidv4(),
+					created_at: Date.now().toString(),
+					is_done: false,
+					user_id: "",
+				},
+				session,
+			])
+		);
+		setNewTask("");
 	};
 
-	const handleRemoving = (id: String) => {
+	const handleRemoving = (id: string) => {
 		dispatch(removeFromTasks(id));
 	};
 
@@ -36,7 +65,7 @@ const QuickTasks = () => {
 						type="text"
 						name=""
 						id=""
-						value={newTick}
+						value={newTask}
 						onInput={(e: React.ChangeEvent<HTMLInputElement>) =>
 							handleInput(e.target.value)
 						}
@@ -51,7 +80,7 @@ const QuickTasks = () => {
 			<ul>
 				{QuickTasks.map((task) => (
 					<div key={task.id.toString()}>
-						<li>{task.title}</li>
+						<li>{task.task_title}</li>
 						<Button
 							variant="contained"
 							type="submit"
