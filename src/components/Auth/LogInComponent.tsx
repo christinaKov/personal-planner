@@ -1,7 +1,7 @@
 // React
-import { useState, useEffect } from "react";
-
-import { useAppDispatch, useAppSelector } from "../../app/hooks";
+import { useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { useAppDispatch } from "../../app/hooks";
 
 // Styles
 import { Box, TextField, Button } from "@mui/material";
@@ -11,6 +11,7 @@ import { fetchSession, supabase } from "../../app/slices/authSlice";
 
 const LogInComponent = () => {
 	const dispatch = useAppDispatch();
+	const navigate = useNavigate();
 
 	const [email, setEmail] = useState("");
 	const [password, setPassword] = useState("");
@@ -46,6 +47,7 @@ const LogInComponent = () => {
 			console.error("Ошибка при входе по email:", error);
 		} else {
 			dispatch(fetchSession());
+			navigate("/");
 		}
 	};
 	return (

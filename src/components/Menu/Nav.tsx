@@ -7,7 +7,7 @@ import { useAppDispatch, useAppSelector } from "../../app/hooks";
 import MenuComponent from "./Menu";
 
 // Auth
-import { fetchSession } from "../../app/slices/authSlice";
+import { fetchSession, supabase } from "../../app/slices/authSlice";
 
 // Styles
 import {
@@ -28,6 +28,16 @@ const Nav = () => {
 	useEffect(() => {
 		dispatch(fetchSession());
 	}, [dispatch]);
+
+	const handleSignOut = async () => {
+		const { error } = await supabase.auth.signOut();
+
+		if (error) {
+			console.error("Ошибка при выходе:", error);
+		} else {
+			dispatch(fetchSession());
+		}
+	};
 
 	const menuIconRef = useRef<HTMLButtonElement>(null);
 
@@ -61,13 +71,16 @@ const Nav = () => {
 							? "Habbit Tracker"
 							: ""}
 					</Typography>
-					<Link to="/log-in">
-						{session ? (
-							<Button color="inherit">Log Out</Button>
-						) : (
+
+					{session ? (
+						<Button onClick={handleSignOut} color="inherit">
+							Log Out
+						</Button>
+					) : (
+						<Link to="/log-in">
 							<Button color="inherit">Log In</Button>
-						)}
-					</Link>
+						</Link>
+					)}
 				</Toolbar>
 			</AppBar>
 			<MenuComponent
