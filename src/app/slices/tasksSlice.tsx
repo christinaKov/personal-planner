@@ -19,11 +19,16 @@ const initialState: QuickTasksState = {
 	tasks: [],
 };
 
-export const fetchTasks = createAsyncThunk("tasks/fetchTasks", async () => {
-	const { data: tasks, error } = await supabase.from("tasks").select("*");
-	//.eq("user_id", "3c08280b-d11f-4915-b314-3c0e9bb96400");
-	return tasks;
-});
+export const fetchTasks = createAsyncThunk(
+	"tasks/fetchTasks",
+	async (userId: string, thunkAPI) => {
+		const { data: tasks, error } = await supabase
+			.from("tasks")
+			.select("*")
+			.eq("user_id", "3c08280b-d11f-4915-b314-3c0e9bb96400");
+		return tasks;
+	}
+);
 
 export const QuickTasksSlice = createSlice({
 	name: "QuickTasks",
@@ -33,21 +38,39 @@ export const QuickTasksSlice = createSlice({
 			const newTask = action.payload[0];
 			const session = action.payload[1];
 
-			if (!session) {
-				state.tasks.push(newTask);
-			} else {
+			if (session) {
 				(async () => {
-					const { data, error } = await supabase
+					const data = await supabase
 						.from("tasks")
 						.insert([
-							{ user_id: session.user.id, task_title: newTask.task_title },
+							{
+								user_id: session.user.id,
+								task_title: newTask.task_title,
+								id: newTask.id,
+							},
 						])
 						.select();
 				})();
 			}
+			state.tasks.push(newTask);
 		},
-		removeFromTasks: (state, action: PayloadAction<string>) => {
-			state.tasks = state.tasks.filter((task) => task.id !== action.payload);
+		removeFromTasks: (
+			state,
+			action: PayloadAction<[QuickTask, Session | null]>
+		) => {
+			const newTask = action.payload[0];
+			const session = action.payload[1];
+
+			if (session) {
+				(async () => {
+					const { error } = await supabase
+						.from("tasks")
+						.delete()
+						.eq("id", newTask.id);
+				})();
+			}
+
+			state.tasks = state.tasks.filter((task) => task.id !== newTask.id);
 		},
 	},
 	extraReducers: (builder) => {

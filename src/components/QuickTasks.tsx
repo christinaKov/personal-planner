@@ -1,6 +1,10 @@
 //React
 import { useState, useEffect } from "react";
+
+// Redux
 import { useAppSelector, useAppDispatch } from "../app/hooks";
+
+// Slice
 import {
 	addToTasks,
 	removeFromTasks,
@@ -23,8 +27,11 @@ const QuickTasks = () => {
 
 	useEffect(() => {
 		dispatch(fetchSession());
-		dispatch(fetchTasks());
 	}, [dispatch]);
+
+	useEffect(() => {
+		if (session) dispatch(fetchTasks(session?.user.id));
+	}, [session]);
 
 	const QuickTasks = useAppSelector((state) => state.quickTasks.tasks);
 
@@ -53,7 +60,18 @@ const QuickTasks = () => {
 	};
 
 	const handleRemoving = (id: string) => {
-		dispatch(removeFromTasks(id));
+		dispatch(
+			removeFromTasks([
+				{
+					task_title: newTask,
+					id,
+					created_at: Date.now().toString(),
+					is_done: false,
+					user_id: "",
+				},
+				session,
+			])
+		);
 	};
 
 	return (
