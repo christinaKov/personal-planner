@@ -68,6 +68,40 @@ export interface Database {
           }
         ]
       }
+      schedule_items: {
+        Row: {
+          created_at: string | null
+          id: string
+          is_done: boolean
+          schedule_item_title: string | null
+          schedule_time: string
+          user_id: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          id?: string
+          is_done?: boolean
+          schedule_item_title?: string | null
+          schedule_time: string
+          user_id?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          id?: string
+          is_done?: boolean
+          schedule_item_title?: string | null
+          schedule_time?: string
+          user_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "schedule_items_user_id_fkey"
+            columns: ["user_id"]
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          }
+        ]
+      }
       tasks: {
         Row: {
           created_at: string | null

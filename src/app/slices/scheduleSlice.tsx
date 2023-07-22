@@ -1,13 +1,14 @@
+// Redux
 import { createSlice } from "@reduxjs/toolkit";
-import type { PayloadAction } from "@reduxjs/toolkit";
-import { scheduler } from "timers/promises";
+import { PayloadAction, createAsyncThunk } from "@reduxjs/toolkit";
+
+// Supabase
+import { supabase } from "./authSlice";
+import { Session } from "@supabase/supabase-js";
+import { Database } from "../../../types/supabase";
 
 // Define a type for the slice state
-interface ScheduleItem {
-	title: string;
-	time: string;
-	id: string;
-}
+type ScheduleItem = Database["public"]["Tables"]["schedule_items"]["Insert"];
 
 interface ScheduleState {
 	schedule: ScheduleItem[];
@@ -16,34 +17,113 @@ interface ScheduleState {
 // Define the initial state using that type
 const initialState: ScheduleState = {
 	schedule: [...Array(24).keys()].map((index) => {
-		const time = index >= 9 ? `${index + 1}:00` : `0${index + 1}:00`;
+		const schedule_time = index >= 9 ? `${index + 1}:00` : `0${index + 1}:00`;
 		return {
-			title: "",
-			time,
+			schedule_item_title: "",
+			schedule_time,
 			id: index.toString(),
 		};
 	}),
 };
 
+export const fetchSchedule = createAsyncThunk(
+	"schedule/fetchSchedule",
+	async (userId: string, thunkAPI) => {
+		const { data: scheduleItems, error } = await supabase
+			.from("schedule_items")
+			.select("*")
+			.eq("user_id", userId);
+		return scheduleItems;
+	}
+);
+
 export const ScheduleSlice = createSlice({
 	name: "Schedule",
 	initialState,
 	reducers: {
-		addToSchedule: (state, action: PayloadAction<ScheduleItem>) => {
+		addToSchedule: (
+			state,
+			action: PayloadAction<[ScheduleItem, Session | null]>
+		) => {
+			const newScheduleItem = action.payload[0];
+			const session = action.payload[1];
+
+			if (session) {
+				(async () => {
+					const data = await supabase
+						.from("schedule_items")
+						.insert([
+							{
+								user_id: session.user.id,
+								schedule_item_title: newScheduleItem.schedule_item_title,
+								id: newScheduleItem.id,
+							},
+						])
+						.select();
+				})();
+			}
+
 			state.schedule.map((scheduleItem) =>
-				scheduleItem.time === action.payload.time
-					? (scheduleItem.title = action.payload.title)
+				scheduleItem.schedule_time === newScheduleItem.schedule_time
+					? (scheduleItem.schedule_item_title =
+							newScheduleItem.schedule_item_title)
 					: ""
 			);
 		},
-		removeFromSchedule: (state, action: PayloadAction<ScheduleItem>) => {
+		removeFromSchedule: (
+			state,
+			action: PayloadAction<[ScheduleItem, Session | null]>
+		) => {
+			const newScheduleItem = action.payload[0];
+			const session = action.payload[1];
+
+			if (session) {
+				(async () => {
+					const { error } = await supabase
+						.from("schedule_items")
+						.delete()
+						.eq("id", newScheduleItem.id);
+				})();
+			}
+
 			state.schedule.map((scheduleItem) =>
-				scheduleItem.id === action.payload.id ? (scheduleItem.title = "") : ""
+				scheduleItem.id === newScheduleItem.id
+					? (scheduleItem.schedule_item_title = "")
+					: ""
+			);
+		},
+		toggleScheduleDone: (
+			state,
+			action: PayloadAction<[ScheduleItem, Session | null]>
+		) => {
+			const newScheduleItem = action.payload[0];
+			const session = action.payload[1];
+
+			if (session) {
+				(async () => {
+					const { data, error } = await supabase
+						.from("tasks")
+						.update({ is_done: !newScheduleItem.is_done })
+						.eq("id", newScheduleItem.id)
+						.select();
+				})();
+			}
+
+			state.schedule.map((schedule) =>
+				schedule.id === newScheduleItem.id
+					? (schedule.is_done = !schedule.is_done)
+					: ""
 			);
 		},
 	},
+	extraReducers: (builder) => {
+		builder.addCase(fetchSchedule.fulfilled, (state, action) => {
+			if (action.payload) state.schedule = action.payload;
+		});
+	},
 });
 
-export const { addToSchedule, removeFromSchedule } = ScheduleSlice.actions;
+export const { addToSchedule, removeFromSchedule, toggleScheduleDone } =
+	ScheduleSlice.actions;
 
 export default ScheduleSlice.reducer;

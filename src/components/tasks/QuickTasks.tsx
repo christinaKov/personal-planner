@@ -28,7 +28,7 @@ const QuickTasks = () => {
 		if (session) dispatch(fetchTasks(session?.user.id));
 	}, [session]);
 
-	const QuickTasks = useAppSelector((state) => state.quickTasks.tasks);
+	const quickTasks = useAppSelector((state) => state.quickTasks.tasks);
 
 	const [newTask, setNewTask] = useState("");
 
@@ -78,7 +78,7 @@ const QuickTasks = () => {
 				</Box>
 			</form>
 			<List>
-				{QuickTasks.map((task) => (
+				{quickTasks.map((task) => (
 					<TaskItem
 						newTask={newTask}
 						key={task.id?.toString()}

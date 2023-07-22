@@ -1,23 +1,25 @@
-import { useAppDispatch } from "../../app/hooks";
+// React
+import { useState } from "react";
+
+// Redux
+import { useAppDispatch, useAppSelector } from "../../app/hooks";
 import {
 	addToSchedule,
 	removeFromSchedule,
 } from "../../app/slices/scheduleSlice";
 
-import { useState } from "react";
-
+// Styles
 import { TextField, Button, Box } from "@mui/material";
 
-const ScheduleItem = ({
-	id,
-	time,
-	title,
-}: {
-	id: string;
-	time: string;
-	title: string;
-}) => {
+// Supabase
+import { Database } from "../../../types/supabase";
+type ScheduleItemType =
+	Database["public"]["Tables"]["schedule_items"]["Insert"];
+
+const ScheduleItem = ({ scheduleItem }: { scheduleItem: ScheduleItemType }) => {
 	const dispatch = useAppDispatch();
+
+	const session = useAppSelector((state) => state.authInfo.session);
 
 	const [newScheduleItem, setNewScheduleItem] = useState("");
 
@@ -28,20 +30,38 @@ const ScheduleItem = ({
 	const handleAdding = (e: React.FormEvent<HTMLFormElement>) => {
 		e.preventDefault();
 
-		dispatch(addToSchedule({ title: newScheduleItem, id, time }));
+		dispatch(
+			addToSchedule([
+				{
+					schedule_item_title: newScheduleItem,
+					id: scheduleItem.id,
+					schedule_time: scheduleItem.schedule_time,
+				},
+				session,
+			])
+		);
 		setNewScheduleItem("");
 	};
 
 	const handleRemoving = () => {
-		dispatch(removeFromSchedule({ time, title, id }));
+		dispatch(
+			removeFromSchedule([
+				{
+					schedule_item_title: newScheduleItem,
+					id: scheduleItem.id,
+					schedule_time: scheduleItem.schedule_time,
+				},
+				session,
+			])
+		);
 	};
 
 	return (
 		<li>
-			{title ? (
+			{scheduleItem.schedule_item_title ? (
 				<div>
-					<p>{time}</p>
-					<p>{title}</p>
+					<p>{scheduleItem.schedule_time}</p>
+					<p>{scheduleItem.schedule_item_title}</p>
 					<Button
 						onClick={handleRemoving}
 						variant="contained"
@@ -56,7 +76,7 @@ const ScheduleItem = ({
 					<Box display="flex" flexDirection="column" gap="0.5vw">
 						<TextField
 							id="standard-basic"
-							placeholder={time}
+							placeholder={scheduleItem.schedule_time}
 							variant="standard"
 							type="text"
 							onInput={(e: React.ChangeEvent<HTMLInputElement>) =>
