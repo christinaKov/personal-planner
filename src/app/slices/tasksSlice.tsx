@@ -8,7 +8,7 @@ import { Session } from "@supabase/supabase-js";
 import { Database } from "../../../types/supabase";
 
 // Define a type for the slice state
-type QuickTask = Database["public"]["Tables"]["tasks"]["Row"];
+type QuickTask = Database["public"]["Tables"]["tasks"]["Insert"];
 
 interface QuickTasksState {
 	tasks: QuickTask[];
@@ -22,6 +22,7 @@ const initialState: QuickTasksState = {
 export const fetchTasks = createAsyncThunk(
 	"tasks/fetchTasks",
 	async (userId: string, thunkAPI) => {
+		console.log("fetching");
 		const { data: tasks, error } = await supabase
 			.from("tasks")
 			.select("*")
@@ -72,6 +73,27 @@ export const QuickTasksSlice = createSlice({
 
 			state.tasks = state.tasks.filter((task) => task.id !== newTask.id);
 		},
+		toggleTaskDone: (
+			state,
+			action: PayloadAction<[QuickTask, Session | null]>
+		) => {
+			const newTask = action.payload[0];
+			const session = action.payload[1];
+
+			if (session) {
+				(async () => {
+					const { data, error } = await supabase
+						.from("tasks")
+						.update({ is_done: !newTask.is_done })
+						.eq("id", newTask.id)
+						.select();
+				})();
+			}
+
+			state.tasks.map((task) =>
+				task.id === newTask.id ? (task.is_done = !task.is_done) : ""
+			);
+		},
 	},
 	extraReducers: (builder) => {
 		builder.addCase(fetchTasks.fulfilled, (state, action) => {
@@ -80,6 +102,7 @@ export const QuickTasksSlice = createSlice({
 	},
 });
 
-export const { addToTasks, removeFromTasks } = QuickTasksSlice.actions;
+export const { addToTasks, removeFromTasks, toggleTaskDone } =
+	QuickTasksSlice.actions;
 
 export default QuickTasksSlice.reducer;

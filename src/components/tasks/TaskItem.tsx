@@ -2,31 +2,42 @@
 import { useAppDispatch, useAppSelector } from "../../app/hooks";
 
 // Slice
-import { removeFromTasks } from "../../app/slices/tasksSlice";
+import { removeFromTasks, toggleTaskDone } from "../../app/slices/tasksSlice";
 
 // Styles
 import { Box, Button, Typography } from "@mui/material";
 import DeleteIcon from "@mui/icons-material/Delete";
 import CheckIcon from "@mui/icons-material/Check";
+import ClearIcon from "@mui/icons-material/Clear";
 
 // Supabase
 import { Database } from "../../../types/supabase";
-type QuickTask = Database["public"]["Tables"]["tasks"]["Row"];
+type QuickTask = Database["public"]["Tables"]["tasks"]["Insert"];
 
 const TaskItem = ({ task, newTask }: { task: QuickTask; newTask: string }) => {
 	const dispatch = useAppDispatch();
 
 	const session = useAppSelector((state) => state.authInfo.session);
 
-	const handleRemoving = (id: string) => {
+	const handleRemoving = () => {
 		dispatch(
 			removeFromTasks([
 				{
 					task_title: newTask,
-					id,
-					created_at: Date.now().toString(),
+					id: task.id,
 					is_done: false,
-					user_id: "",
+				},
+				session,
+			])
+		);
+	};
+
+	const handleDone = () => {
+		dispatch(
+			toggleTaskDone([
+				{
+					id: task.id,
+					is_done: task.is_done,
 				},
 				session,
 			])
@@ -41,18 +52,41 @@ const TaskItem = ({ task, newTask }: { task: QuickTask; newTask: string }) => {
 				alignItems="center"
 				gap="1vw"
 			>
-				<Typography paragraph sx={{ wordBreak: "break-all" }}>
+				<Typography
+					paragraph
+					sx={{
+						wordBreak: "break-all",
+						textDecoration: task.is_done ? "line-through" : "",
+					}}
+				>
 					{task.task_title}
 				</Typography>
 				<Box display="flex" gap="0.5vw">
-					<Button variant="contained" type="submit" size="small">
-						<CheckIcon></CheckIcon>
-					</Button>
+					{task.is_done ? (
+						<Button
+							variant="contained"
+							type="submit"
+							size="small"
+							onClick={handleDone}
+						>
+							<ClearIcon></ClearIcon>
+						</Button>
+					) : (
+						<Button
+							variant="contained"
+							type="submit"
+							size="small"
+							onClick={handleDone}
+						>
+							<CheckIcon></CheckIcon>
+						</Button>
+					)}
+
 					<Button
 						variant="contained"
 						type="submit"
 						size="small"
-						onClick={() => handleRemoving(task.id)}
+						onClick={handleRemoving}
 					>
 						<DeleteIcon></DeleteIcon>
 					</Button>

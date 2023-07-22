@@ -85,7 +85,7 @@ const QuickTasks = () => {
 				{QuickTasks.map((task) => (
 					<TaskItem
 						newTask={newTask}
-						key={task.id.toString()}
+						key={task.id?.toString()}
 						task={task}
 					></TaskItem>
 				))}
