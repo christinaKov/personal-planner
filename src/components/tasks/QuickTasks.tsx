@@ -3,15 +3,11 @@ import { useState, useEffect } from "react";
 
 // Redux
 import { useAppSelector, useAppDispatch } from "../../app/hooks";
-
-// Slice
+import { fetchSession } from "../../app/slices/authSlice";
 import { addToTasks, fetchTasks } from "../../app/slices/tasksSlice";
 
 // Components
 import TaskItem from "./TaskItem";
-
-// Supabase
-import { fetchSession } from "../../app/slices/authSlice";
 
 // UUID
 import { v4 as uuidv4 } from "uuid";

@@ -1,8 +1,9 @@
-// Redux
+//Redux
 import { useAppDispatch, useAppSelector } from "../../app/hooks";
-
-// Slice
-import { removeFromTasks, toggleTaskDone } from "../../app/slices/tasksSlice";
+import {
+	removeFromProjects,
+	toggleProjectDone,
+} from "../../app/slices/projectsSlice";
 
 // Styles
 import { Box, Button, Typography } from "@mui/material";
@@ -12,19 +13,25 @@ import ClearIcon from "@mui/icons-material/Clear";
 
 // Supabase
 import { Database } from "../../../types/supabase";
-type QuickTask = Database["public"]["Tables"]["tasks"]["Insert"];
+type Project = Database["public"]["Tables"]["projects"]["Insert"];
 
-const TaskItem = ({ task, newTask }: { task: QuickTask; newTask: string }) => {
+const ProjectItem = ({
+	project,
+	newProject,
+}: {
+	project: Project;
+	newProject: string;
+}) => {
 	const dispatch = useAppDispatch();
 
 	const session = useAppSelector((state) => state.authInfo.session);
 
 	const handleRemoving = () => {
 		dispatch(
-			removeFromTasks([
+			removeFromProjects([
 				{
-					task_title: newTask,
-					id: task.id,
+					project_title: newProject,
+					id: project.id,
 				},
 				session,
 			])
@@ -33,10 +40,10 @@ const TaskItem = ({ task, newTask }: { task: QuickTask; newTask: string }) => {
 
 	const handleDone = () => {
 		dispatch(
-			toggleTaskDone([
+			toggleProjectDone([
 				{
-					id: task.id,
-					is_done: task.is_done,
+					id: project.id,
+					is_done: project.is_done,
 				},
 				session,
 			])
@@ -55,13 +62,13 @@ const TaskItem = ({ task, newTask }: { task: QuickTask; newTask: string }) => {
 					paragraph
 					sx={{
 						wordBreak: "break-all",
-						textDecoration: task.is_done ? "line-through" : "",
+						textDecoration: project.is_done ? "line-through" : "",
 					}}
 				>
-					{task.task_title}
+					{project.project_title}
 				</Typography>
 				<Box display="flex" gap="0.5vw">
-					{task.is_done ? (
+					{project.is_done ? (
 						<Button
 							variant="contained"
 							type="submit"
@@ -95,4 +102,4 @@ const TaskItem = ({ task, newTask }: { task: QuickTask; newTask: string }) => {
 	);
 };
 
-export default TaskItem;
+export default ProjectItem;

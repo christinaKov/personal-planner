@@ -1,6 +1,6 @@
 // Components
-import QuickTasks from "../components/tasks/QuickTasks";
-import Projects from "../components/Projects";
+import QuickTasks from "../components/Tasks/QuickTasks";
+import Projects from "../components/Projects/Projects";
 import Schedule from "../components/Schedule/Schedule";
 
 //Styles

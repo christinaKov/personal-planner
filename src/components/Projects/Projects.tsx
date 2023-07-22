@@ -1,14 +1,33 @@
-import { useAppSelector, useAppDispatch } from "../app/hooks";
-import { addToProjects, removeFromProjects } from "../app/slices/projectsSlice";
+// React
+import { useState, useEffect } from "react";
 
+//Redux
+import { useAppSelector, useAppDispatch } from "../../app/hooks";
+import { addToProjects, fetchProjects } from "../../app/slices/projectsSlice";
+import { fetchSession } from "../../app/slices/authSlice";
+
+// Components
+import ProjectItem from "./ProjectItem";
+
+// UUID
 import { v4 as uuidv4 } from "uuid";
-import { useState } from "react";
 
-import { TextField, Button, Box } from "@mui/material";
+// Styles
+import { TextField, Button, Box, Typography, List } from "@mui/material";
 
 const Projects = () => {
 	const projects = useAppSelector((state) => state.projects.projects);
 	const dispatch = useAppDispatch();
+
+	const session = useAppSelector((state) => state.authInfo.session);
+
+	useEffect(() => {
+		dispatch(fetchSession());
+	}, [dispatch]);
+
+	useEffect(() => {
+		if (session) dispatch(fetchProjects(session?.user.id));
+	}, [session]);
 
 	const [newProject, setNewProject] = useState("");
 
@@ -19,16 +38,20 @@ const Projects = () => {
 	const handleAdding = (e: React.FormEvent<HTMLFormElement>) => {
 		e.preventDefault();
 
-		dispatch(addToProjects({ title: newProject, id: uuidv4() }));
+		dispatch(
+			addToProjects([
+				{ project_title: newProject, id: uuidv4(), is_done: false },
+				session,
+			])
+		);
 		setNewProject("");
-	};
-	const handleRemoving = (id: String) => {
-		dispatch(removeFromProjects(id));
 	};
 
 	return (
 		<Box display="flex" flexDirection="column" gap="1rem">
-			<h1>Projects</h1>
+			<Typography variant="h5" align="center">
+				Projects
+			</Typography>
 			<form onSubmit={(e) => handleAdding(e)}>
 				<Box display="flex" flexDirection="column" gap="0.5vw">
 					<TextField
@@ -47,21 +70,15 @@ const Projects = () => {
 					</Button>
 				</Box>
 			</form>
-			<ul>
+			<List>
 				{projects.map((project) => (
-					<div key={project.id.toString()}>
-						<li>{project.title}</li>
-						<Button
-							variant="contained"
-							type="submit"
-							size="small"
-							onClick={() => handleRemoving(project.id)}
-						>
-							Remove Item
-						</Button>
-					</div>
+					<ProjectItem
+						project={project}
+						newProject={newProject}
+						key={project.id?.toString()}
+					></ProjectItem>
 				))}
-			</ul>
+			</List>
 		</Box>
 	);
 };

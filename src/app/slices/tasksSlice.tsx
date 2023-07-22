@@ -22,11 +22,10 @@ const initialState: QuickTasksState = {
 export const fetchTasks = createAsyncThunk(
 	"tasks/fetchTasks",
 	async (userId: string, thunkAPI) => {
-		console.log("fetching");
 		const { data: tasks, error } = await supabase
 			.from("tasks")
 			.select("*")
-			.eq("user_id", "3c08280b-d11f-4915-b314-3c0e9bb96400");
+			.eq("user_id", userId);
 		return tasks;
 	}
 );
