@@ -1,5 +1,5 @@
 // Components
-import QuickTasks from "../components/QuickTasks";
+import QuickTasks from "../components/tasks/QuickTasks";
 import Projects from "../components/Projects";
 import Schedule from "../components/Schedule/Schedule";
 
@@ -15,7 +15,13 @@ const MainPage = () => {
 			width="100%"
 			padding="4rem"
 		>
-			<Box display="grid" width="100%" gridTemplateColumns="repeat(3, 1fr)">
+			<Box
+				display="grid"
+				width="100%"
+				gridTemplateColumns="repeat(3, minmax(0, 1fr) )"
+				gridAutoFlow="row"
+				gap="1vw"
+			>
 				<QuickTasks></QuickTasks>
 				<Projects></Projects>
 				<Schedule></Schedule>

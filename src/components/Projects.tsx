@@ -27,7 +27,7 @@ const Projects = () => {
 	};
 
 	return (
-		<Box display="flex" flexDirection="column" padding="2rem" gap="1rem">
+		<Box display="flex" flexDirection="column" gap="1rem">
 			<h1>Projects</h1>
 			<form onSubmit={(e) => handleAdding(e)}>
 				<Box display="flex" flexDirection="column" gap="0.5vw">
