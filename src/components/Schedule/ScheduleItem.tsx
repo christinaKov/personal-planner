@@ -11,6 +11,9 @@ import {
 // Styles
 import { TextField, Button, Box } from "@mui/material";
 
+// UUID
+import { v4 as uuidv4 } from "uuid";
+
 // Supabase
 import { Database } from "../../../types/supabase";
 type ScheduleItemType =
@@ -34,7 +37,7 @@ const ScheduleItem = ({ scheduleItem }: { scheduleItem: ScheduleItemType }) => {
 			addToSchedule([
 				{
 					schedule_item_title: newScheduleItem,
-					id: scheduleItem.id,
+					id: uuidv4(),
 					schedule_time: scheduleItem.schedule_time,
 				},
 				session,
