@@ -19,13 +19,18 @@ const initialState: QuickTasksState = {
 	tasks: [],
 };
 
+const sortList = (list: QuickTask[]) =>
+	list.sort(
+		(task, nextTask) => Number(task.is_done) - Number(nextTask.is_done)
+	);
+
 export const fetchTasks = createAsyncThunk(
 	"tasks/fetchTasks",
 	async (userId: string | undefined, thunkAPI) => {
 		const { data: tasks, error } = userId
 			? await supabase.from("tasks").select("*").eq("user_id", userId)
 			: { data: [], error: "" };
-		return tasks;
+		return tasks ? sortList(tasks) : [];
 	}
 );
 
@@ -51,7 +56,7 @@ export const QuickTasksSlice = createSlice({
 						.select();
 				})();
 			}
-			state.tasks.push(newTask);
+			state.tasks.unshift(newTask);
 		},
 		removeFromTasks: (
 			state,
@@ -91,6 +96,7 @@ export const QuickTasksSlice = createSlice({
 			state.tasks.map((task) =>
 				task.id === newTask.id ? (task.is_done = !task.is_done) : ""
 			);
+			sortList(state.tasks);
 		},
 	},
 	extraReducers: (builder) => {

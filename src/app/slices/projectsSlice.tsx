@@ -19,13 +19,19 @@ const initialState: ProjectsState = {
 	projects: [],
 };
 
+const sortList = (list: Project[]) =>
+	list.sort(
+		(project, nextProject) =>
+			Number(project.is_done) - Number(nextProject.is_done)
+	);
+
 export const fetchProjects = createAsyncThunk(
 	"projects/fetchProjects",
 	async (userId: string | undefined, thunkAPI) => {
 		const { data: projects, error } = userId
 			? await supabase.from("projects").select("*").eq("user_id", userId)
 			: { data: [], error: "" };
-		return projects;
+		return projects ? sortList(projects) : [];
 	}
 );
 
@@ -54,7 +60,7 @@ export const ProjectsSlice = createSlice({
 						.select();
 				})();
 			}
-			state.projects.push(newProject);
+			state.projects.unshift(newProject);
 		},
 		removeFromProjects: (
 			state,
@@ -96,6 +102,7 @@ export const ProjectsSlice = createSlice({
 			state.projects.map((project) =>
 				project.id === newProject.id ? (project.is_done = !project.is_done) : ""
 			);
+			sortList(state.projects);
 		},
 	},
 	extraReducers: (builder) => {
