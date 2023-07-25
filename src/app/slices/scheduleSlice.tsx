@@ -24,7 +24,7 @@ const initialState: ScheduleState = {
 
 export const fetchSchedule = createAsyncThunk(
 	"schedule/fetchSchedule",
-	async (userId: string, thunkAPI) => {
+	async (userId: string | undefined, thunkAPI) => {
 		const scheduleList = [...Array(24).keys()].map((index) => {
 			const schedule_time = index >= 9 ? `${index + 1}:00` : `0${index + 1}:00`;
 			return {
@@ -34,16 +34,16 @@ export const fetchSchedule = createAsyncThunk(
 			};
 		});
 
-		const { data: scheduleItems, error } = await supabase
-			.from("schedule_items")
-			.select("*")
-			.eq("user_id", userId);
+		const { data: scheduleItems, error } = userId
+			? await supabase.from("schedule_items").select("*").eq("user_id", userId)
+			: { data: [], error: "" };
 
 		scheduleList.map((scheduleItem) => {
 			scheduleItems?.forEach((supabaseItem) =>
 				scheduleItem.schedule_time === supabaseItem.schedule_time
-					? (scheduleItem.schedule_item_title =
-							supabaseItem.schedule_item_title)
+					? ((scheduleItem.schedule_item_title =
+							supabaseItem.schedule_item_title),
+					  (scheduleItem.id = supabaseItem.id))
 					: ""
 			);
 		});

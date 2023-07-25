@@ -25,7 +25,7 @@ const QuickTasks = () => {
 	}, [dispatch]);
 
 	useEffect(() => {
-		if (session) dispatch(fetchTasks(session?.user.id));
+		dispatch(fetchTasks(session?.user.id));
 	}, [session]);
 
 	const quickTasks = useAppSelector((state) => state.quickTasks.tasks);
@@ -77,13 +77,16 @@ const QuickTasks = () => {
 					</Button>
 				</Box>
 			</form>
-			<List>
+			<List
+				sx={{
+					display: "flex",
+					flexDirection: "column",
+					gap: "1.5vw",
+					paddingTop: "0",
+				}}
+			>
 				{quickTasks.map((task) => (
-					<TaskItem
-						newTask={newTask}
-						key={task.id?.toString()}
-						task={task}
-					></TaskItem>
+					<TaskItem newTask={newTask} key={task.id} task={task}></TaskItem>
 				))}
 			</List>
 		</Box>

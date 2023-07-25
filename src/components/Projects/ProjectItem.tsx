@@ -55,7 +55,7 @@ const ProjectItem = ({
 			<Box
 				display="flex"
 				justifyContent="space-between"
-				alignItems="center"
+				alignItems="flex-start"
 				gap="1vw"
 			>
 				<Typography

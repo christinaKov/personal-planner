@@ -22,7 +22,7 @@ const Schedule = () => {
 	}, [dispatch]);
 
 	useEffect(() => {
-		if (session) dispatch(fetchSchedule(session?.user.id));
+		dispatch(fetchSchedule(session?.user.id));
 	}, [session]);
 
 	const schedule = useAppSelector((state) => state.schedule.schedule);
@@ -32,10 +32,17 @@ const Schedule = () => {
 			<Typography variant="h5" align="center">
 				Schedule
 			</Typography>
-			<List>
+			<List
+				sx={{
+					display: "flex",
+					flexDirection: "column",
+					gap: "1.5vw",
+					paddingTop: "0",
+				}}
+			>
 				{schedule.map((scheduleItem) => (
 					<ScheduleItem
-						key={scheduleItem.id?.toString()}
+						key={scheduleItem.id}
 						scheduleItem={scheduleItem}
 					></ScheduleItem>
 				))}

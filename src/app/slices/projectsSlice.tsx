@@ -21,11 +21,10 @@ const initialState: ProjectsState = {
 
 export const fetchProjects = createAsyncThunk(
 	"projects/fetchProjects",
-	async (userId: string, thunkAPI) => {
-		const { data: projects, error } = await supabase
-			.from("projects")
-			.select("*")
-			.eq("user_id", userId);
+	async (userId: string | undefined, thunkAPI) => {
+		const { data: projects, error } = userId
+			? await supabase.from("projects").select("*").eq("user_id", userId)
+			: { data: [], error: "" };
 		return projects;
 	}
 );

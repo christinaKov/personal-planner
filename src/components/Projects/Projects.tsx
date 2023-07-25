@@ -26,7 +26,7 @@ const Projects = () => {
 	}, [dispatch]);
 
 	useEffect(() => {
-		if (session) dispatch(fetchProjects(session?.user.id));
+		dispatch(fetchProjects(session?.user.id));
 	}, [session]);
 
 	const [newProject, setNewProject] = useState("");
@@ -70,7 +70,14 @@ const Projects = () => {
 					</Button>
 				</Box>
 			</form>
-			<List>
+			<List
+				sx={{
+					display: "flex",
+					flexDirection: "column",
+					gap: "1.5vw",
+					paddingTop: "0",
+				}}
+			>
 				{projects.map((project) => (
 					<ProjectItem
 						project={project}

@@ -9,7 +9,10 @@ import {
 } from "../../app/slices/scheduleSlice";
 
 // Styles
-import { TextField, Button, Box } from "@mui/material";
+import { TextField, Button, Box, Typography } from "@mui/material";
+import DeleteIcon from "@mui/icons-material/Delete";
+import CheckIcon from "@mui/icons-material/Check";
+import ClearIcon from "@mui/icons-material/Clear";
 
 // UUID
 import { v4 as uuidv4 } from "uuid";
@@ -37,7 +40,7 @@ const ScheduleItem = ({ scheduleItem }: { scheduleItem: ScheduleItemType }) => {
 			addToSchedule([
 				{
 					schedule_item_title: newScheduleItem,
-					id: uuidv4(),
+					id: scheduleItem.id,
 					schedule_time: scheduleItem.schedule_time,
 				},
 				session,
@@ -62,18 +65,32 @@ const ScheduleItem = ({ scheduleItem }: { scheduleItem: ScheduleItemType }) => {
 	return (
 		<li>
 			{scheduleItem.schedule_item_title ? (
-				<div>
-					<p>{scheduleItem.schedule_time}</p>
-					<p>{scheduleItem.schedule_item_title}</p>
+				<Box
+					display="flex"
+					justifyContent="space-between"
+					alignItems="flex-start"
+					gap="1vw"
+				>
+					<Typography paragraph>{scheduleItem.schedule_time}</Typography>
+					<Typography
+						paragraph
+						sx={{
+							wordBreak: "break-all",
+							textDecoration: scheduleItem.is_done ? "line-through" : "",
+							flex: 1,
+						}}
+					>
+						{scheduleItem.schedule_item_title}
+					</Typography>
 					<Button
 						onClick={handleRemoving}
 						variant="contained"
 						type="submit"
 						size="small"
 					>
-						Remove Item
+						<DeleteIcon></DeleteIcon>
 					</Button>
-				</div>
+				</Box>
 			) : (
 				<form onSubmit={(e) => handleAdding(e)}>
 					<Box display="flex" flexDirection="column" gap="0.5vw">
