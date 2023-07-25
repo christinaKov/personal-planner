@@ -6,6 +6,7 @@ import { useAppDispatch, useAppSelector } from "../../app/hooks";
 import {
 	addToSchedule,
 	removeFromSchedule,
+	toggleScheduleDone,
 } from "../../app/slices/scheduleSlice";
 
 // Styles
@@ -62,6 +63,19 @@ const ScheduleItem = ({ scheduleItem }: { scheduleItem: ScheduleItemType }) => {
 		);
 	};
 
+	const handleDone = () => {
+		dispatch(
+			toggleScheduleDone([
+				{
+					id: scheduleItem.id,
+					is_done: scheduleItem.is_done,
+					schedule_time: scheduleItem.schedule_time,
+				},
+				session,
+			])
+		);
+	};
+
 	return (
 		<li>
 			{scheduleItem.schedule_item_title ? (
@@ -82,6 +96,25 @@ const ScheduleItem = ({ scheduleItem }: { scheduleItem: ScheduleItemType }) => {
 					>
 						{scheduleItem.schedule_item_title}
 					</Typography>
+					{scheduleItem.is_done ? (
+						<Button
+							variant="contained"
+							type="submit"
+							size="small"
+							onClick={handleDone}
+						>
+							<ClearIcon></ClearIcon>
+						</Button>
+					) : (
+						<Button
+							variant="contained"
+							type="submit"
+							size="small"
+							onClick={handleDone}
+						>
+							<CheckIcon></CheckIcon>
+						</Button>
+					)}
 					<Button
 						onClick={handleRemoving}
 						variant="contained"
@@ -105,7 +138,7 @@ const ScheduleItem = ({ scheduleItem }: { scheduleItem: ScheduleItemType }) => {
 							value={newScheduleItem}
 						/>
 						<Button variant="contained" type="submit" size="small">
-							Add Item
+							Create
 						</Button>
 					</Box>
 				</form>

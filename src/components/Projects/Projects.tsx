@@ -66,7 +66,7 @@ const Projects = () => {
 						}
 					/>
 					<Button variant="contained" type="submit" size="small">
-						Add Item
+						Create
 					</Button>
 				</Box>
 			</form>
