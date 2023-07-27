@@ -6,7 +6,7 @@ import { Provider } from "react-redux";
 import MainPage from "./pages/PlannerPage";
 import Nav from "./components/Menu/Nav";
 import LogInPage from "./pages/AuthPage";
-import HabbitOfTheDay from "./components/HabbitOfTheDay";
+import HabbitOfTheDay from "./pages/HabbitsPage";
 
 //Router
 import { BrowserRouter, Routes, Route } from "react-router-dom";
